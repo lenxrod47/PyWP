@@ -5,7 +5,7 @@
 
 import pandas as pd
 
-df = pd.read_excel("/home/lenxrod47/PROJETOS_PESSOAIS/ctp_notifica/teste1.xlsx")
+df = pd.read_excel("teste1.xlsx")
 
 df.head(100)
 
@@ -61,8 +61,8 @@ df_final['Mensagem'] = df_final.apply(mensageiro, axis=1)
 
 #@title Grava o dataframe em um novo arquivo .csv e .xlsx
 
-#df_final.to_csv("/home/lenxrod47/PROJETOS_PESSOAIS/ctp_notifica/df_final.csv")
-#df_final.to_excel("/home/lenxrod47/PROJETOS_PESSOAIS/ctp_notifica/df_final.xlsx")
+#df_final.to_csv("df_final.csv")
+#df_final.to_excel("df_final.xlsx")
 
 """PARTE 2 - Construção do Envio Automático / WhatsApp"""
 
