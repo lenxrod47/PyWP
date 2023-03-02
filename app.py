@@ -5,7 +5,7 @@
 
 import pandas as pd
 
-df = pd.read_excel("teste1.xlsx")
+df = pd.read_excel(r'C:\Users\CTP-ADM\Desktop\PyWP\PyWP-main\teste1.xlsx')
 
 df.head(100)
 
@@ -61,40 +61,47 @@ df_final['Mensagem'] = df_final.apply(mensageiro, axis=1)
 
 #@title Grava o dataframe em um novo arquivo .csv e .xlsx
 
-#df_final.to_csv("df_final.csv")
-#df_final.to_excel("df_final.xlsx")
-
-"""PARTE 2 - Construção do Envio Automático / WhatsApp"""
-
-#contatos = pd.read_excel("df_final.xlsx")
-
-# Importação do Selenium / Chrome WebDriver / Time / URL Lib
+df_final.to_csv("df_final.csv")
+df_final.to_excel("df_final.xlsx")
 
 from selenium import webdriver
-from selenium.webdriver.common import keys
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
+
+navegador = webdriver.Chrome()
+navegador.get("https://web.whatsapp.com")
+
+# Aguarda o carregamento do WhatsApp
+
+while len(navegador.find_elements(By.ID, 'side')) < 1:
+    time.sleep(1)
+time.sleep(2) 
+
 import urllib
+import time
+import os
 
-#Cria a instância do navegador Chrome
+for linha in df_final.index:
+    nome = df_final.loc[linha, "Nome"]
+    mensagem = df_final.loc[linha, "Mensagem"]
+    telefone = df_final.loc[linha, "Telefone"]
+    
+    texto = urllib.parse.quote(mensagem)
 
-minichrome = webdriver.Chrome()
-minichrome.get("https://web.whatsapp.com/")
-
-#Coloca um While para que o algoritmo aguarde 1 segundo e verifique se o elemento "pane-side" (cartão de contatos do WhatsApp) está ativo.
-
-while len(minichrome.find_elements(By.ID, 'side')) < 1:
-    time.sleep(1)
-
-for i, mensagem in enumerate(df_final["Mensagem"]):
-  pessoa = df_final.loc[i, "Nome"]
-  telefone = df_final.loc[i, "Telefone"]
-  texto = urllib.parse.quote(mensagem)
-  link = f"https://web.whatsapp.com/send?phone={telefone}&text={texto}"
-  minichrome.get(link)
-  while len(minichrome.find_elements(By.ID, 'side')) < 1:
-    time.sleep(1)
-  minichrome.find_element(By.XPATH, '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span').click()
-  time.sleep(12)
-
-
+    # Cria a mensagem
+    link = f"https://web.whatsapp.com/send?phone={telefone}&text={texto}"
+    
+    navegador.get(link)
+    
+    # Aguarda o carregamento do WhastApp
+    while len(navegador.find_elements(By.ID, 'side')) < 1: # -> lista for vazia -> que o elemento não existe ainda
+        time.sleep(1)
+    time.sleep(2) 
+    
+    # você tem que verificar se o número é inválido
+    if len(navegador.find_elements(By.XPATH, '//*[@id="app"]/div/span[2]/div/span/div/div/div/div/div/div[1]')) < 1:
+        # enviar a mensagem
+        navegador.find_element(By.XPATH, '//*[@id="main"]/footer/div[1]/div/span[2]/div/div[2]/div[2]/button/span').click()
+        
+        time.sleep(5)
